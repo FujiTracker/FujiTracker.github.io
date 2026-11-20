@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hunter Enchant Cost Tracker · WoW Forever</title>
+<style>
+  :root{--bg:#14161a;--card:#1d2026;--line:#2b2f38;--fg:#e6e8ec;--mut:#8b93a1;--acc:#c8a24a;--good:#5cc98a;--bad:#e0605e}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+  main{max-width:980px;margin:0 auto;padding:20px 14px 60px}
+  h1{font-size:22px;margin:0 0 4px;color:var(--acc)}
+  .sub{color:var(--mut);font-size:13px;margin-bottom:16px}
+  .bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:14px 0}
+  .seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  .seg button{background:var(--card);color:var(--fg);border:0;padding:7px 13px;cursor:pointer;font:inherit}
+  .seg button+button{border-left:1px solid var(--line)}
+  .seg button.on{background:var(--acc);color:#14161a;font-weight:600}
+  .pill{font-size:12px;padding:3px 9px;border-radius:99px;border:1px solid var(--line);color:var(--mut)}
+  .pill.stale{color:var(--bad);border-color:var(--bad)} .pill.fresh{color:var(--good);border-color:var(--good)}
+  table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  th,td{padding:9px 10px;text-align:left;border-bottom:1px solid var(--line);vertical-align:middle}
+  th{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--mut);background:#181b20}
+  td.num,th.num{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+  tr.row{cursor:pointer} tr.row:hover td{background:#22262d}
+  tr.off td{opacity:.45}
+  tr.detail td{background:#181b20;padding:8px 14px 12px 40px;cursor:default}
+  .g{color:#f5c542}.s{color:#c0c6d0}.c{color:#d08a55}
+  .warn{color:var(--bad);font-size:12px}
+  .small{font-size:12px;color:var(--mut)}
+  a{color:#7fb2ff;text-decoration:none} a:hover{text-decoration:underline}
+  tfoot td{font-weight:700;background:#181b20;border-bottom:0}
+  svg.spark{width:90px;height:24px;vertical-align:middle}
+  .sub-t{width:100%;border-collapse:collapse;background:none;border:0}
+  .sub-t td,.sub-t th{border:0;padding:3px 8px;background:none}
+  input[type=number]{width:90px;background:#101216;color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:3px 6px}
+  .note{margin-top:18px;color:var(--mut);font-size:12.5px}
+  @media(max-width:640px){.hide-m{display:none}th,td{padding:8px 6px}}
+</style>
+</head>
+<body>
+<main>
+  <h1>Hunter Enchant Cost Tracker</h1>
+  <div class="sub">Reagent cost per slot for the Forever Hunter pre-raid BiS enchants · prices from <a href="https://blackwater.exchange/m/us/1/113" target="_blank" rel="noopener">Blackwater Exchange</a> (<span id="house">Horde PvP, Americas</span>)</div>
+
+  <div class="bar">
+    <div class="seg" id="preset" title="Which enchants count toward the total">
+      <button data-v="weave" class="on">Weave / Turret</button><button data-v="melee">Melee</button>
+    </div>
+    <div class="seg" id="basis" title="Which auction price to use">
+      <button data-v="avg" class="on">Average ask</button><button data-v="min">Lowest ask</button>
+    </div>
+    <span id="age" class="pill">loading…</span>
+  </div>
+
+  <table>
+    <thead><tr><th>Slot</th><th>Enchant</th><th class="num">Cost</th><th class="num hide-m">Trend</th><th class="num">In total</th></tr></thead>
+    <tbody id="rows"></tbody>
+    <tfoot><tr><td colspan="2">Total for selected set</td><td class="num" id="total"></td><td class="hide-m"></td><td></td></tr></tfoot>
+  </table>
+
+  <div class="note">
+    Click a row to see its reagents (each links to its auction page). Tick or untick “In total” to build your own set.
+    Items with no auction listings (Crystal Force, Whipper Root Tuber, Blood of Heroes) are flagged and left out of the cost unless you enter a price for them in the row.
+    Formula/recipe costs aren’t included. The SAF-T Ultra Precision Scope (Engineering) isn’t listed on the auction house, so it isn’t tracked.
+    Prices refresh from the auction scan about every 30 minutes; this page re-checks every 5 minutes.
+    Reagent counts from <a href="https://rankedboost.com/world-of-warcraft/forever/enchants/bracer/" target="_blank" rel="noopener">RankedBoost</a>;
+    enchant picks from the <a href="https://toxickevinferm.github.io/hunter-guide/prebis-new/" target="_blank" rel="noopener">Forever Hunter guide</a>.
+  </div>
+</main>
+
+<script>
+const AH = "https://blackwater.exchange/m/us/1/113/item/";
+let cfg, prices, hist = [], preset = "weave", basis = "avg", open = new Set();
+const store = {
+  get(k, d){ try{ const v = localStorage.getItem(k); return v==null?d:JSON.parse(v) }catch(e){ return d } },
+  set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)) }catch(e){} }
+};
+let manual = store.get("manual", {});        // itemId -> copper, for unlisted items
+let picks  = store.get("picks", {});         // recipeId -> bool (overrides preset)
+
+const fmt = c => {
+  if (c == null) return "–";
+  c = Math.round(c); const g = Math.floor(c/10000), s = Math.floor(c%10000/100), k = c%100;
+  return (g?`<span class="g">${g.toLocaleString()}g</span> `:"") + `<span class="s">${s}s</span>` + (g?"":` <span class="c">${k}c</span>`);
+};
+const ago = iso => { const m = Math.round((Date.now()-new Date(iso))/60000); return m<1?"just now":m<60?m+" min ago":Math.round(m/60)+" h ago"; };
+
+function unit(iid){
+  const p = prices.items[iid]; const v = p && p[basis];
+  if (v != null) return {v, src:"ah"};
+  if (manual[iid] != null) return {v: manual[iid], src:"manual"};
+  return {v:null, src:"none"};
+}
+function cost(r){
+  let t = r.fee || 0, missing = [];
+  for (const [iid,q] of r.reagents){ const u = unit(iid); if (u.v==null) missing.push(iid); else t += u.v*q; }
+  return {t, missing};
+}
+const included = r => r.id in picks ? picks[r.id] : r.presets.includes(preset === "weave" ? "weave" : "melee");
+
+function spark(id){
+  const pts = hist.map(h=>h.cost[id]).filter(v=>v!=null).slice(-120);
+  if (pts.length < 2) return '<span class="small">–</span>';
+  const lo = Math.min(...pts), hi = Math.max(...pts), rng = hi-lo || 1;
+  const d = pts.map((v,i)=>`${(i/(pts.length-1)*88+1).toFixed(1)},${(22-(v-lo)/rng*20).toFixed(1)}`).join(" ");
+  const up = pts[pts.length-1] > pts[0];
+  return `<svg class="spark" viewBox="0 0 90 24"><polyline fill="none" stroke="${up?'#e0605e':'#5cc98a'}" stroke-width="1.6" points="${d}"/></svg>`;
+}
+
+function render(){
+  const list = cfg.recipes.map(r=>({r, ...cost(r)})).sort((a,b)=>b.t-a.t);
+  let total = 0, anyMissing = false, html = "";
+  for (const {r,t,missing} of list){
+    const on = included(r); if (on){ total += t; if (missing.length) anyMissing = true; }
+    html += `<tr class="row ${on?'':'off'}" data-id="${r.id}">
+      <td>${r.slot}</td>
+      <td>${r.name}${missing.length?` <span class="warn">⚠ ${missing.length} unpriced</span>`:""}</td>
+      <td class="num">${fmt(t)}</td><td class="num hide-m">${spark(r.id)}</td>
+      <td class="num"><input type="checkbox" ${on?"checked":""} data-pick="${r.id}"></td></tr>`;
+    if (open.has(r.id)){
+      html += `<tr class="detail"><td colspan="5"><table class="sub-t"><tr><th>Reagent</th><th class="num">Qty</th><th class="num">Each</th><th class="num">Subtotal</th></tr>`;
+      for (const [iid,q] of r.reagents){
+        const u = unit(iid), p = prices.items[iid];
+        const each = u.src==="none"
+          ? `<span class="warn">no listings</span> <input type="number" min="0" step="1" placeholder="gold" data-manual="${iid}">`
+          : fmt(u.v) + (u.src==="manual"?` <span class="small">(yours)</span>`:"") ;
+        html += `<tr><td><a href="${AH+iid}" target="_blank" rel="noopener">${cfg.items[iid]}</a> <span class="small">${p?p.units.toLocaleString()+" listed":""}</span></td>
+          <td class="num">${q}</td><td class="num">${each}</td><td class="num">${u.v==null?"–":fmt(u.v*q)}</td></tr>`;
+      }
+      if (r.fee) html += `<tr><td>Quest fee</td><td class="num">1</td><td class="num">${fmt(r.fee)}</td><td class="num">${fmt(r.fee)}</td></tr>`;
+      html += `</table></td></tr>`;
+    }
+  }
+  document.getElementById("rows").innerHTML = html;
+  document.getElementById("total").innerHTML = fmt(total) + (anyMissing?' <span class="warn">⚠</span>':"");
+  const el = document.getElementById("age"), mins = (Date.now()-new Date(prices.house.captured_at))/60000;
+  el.textContent = "Auction scan " + ago(prices.house.captured_at);
+  el.className = "pill " + (mins > 120 ? "stale" : "fresh");
+  document.getElementById("house").textContent = prices.house.name.replace(" Auction House","");
+}
+
+document.addEventListener("click", e=>{
+  const seg = e.target.closest(".seg button");
+  if (seg){
+    const grp = seg.parentElement.id; seg.parentElement.querySelectorAll("button").forEach(b=>b.classList.toggle("on", b===seg));
+    if (grp==="preset"){ preset = seg.dataset.v; picks = {}; store.set("picks", picks); } else basis = seg.dataset.v;
+    return render();
+  }
+  if (e.target.matches("[data-pick]")){ picks[e.target.dataset.pick] = e.target.checked; store.set("picks", picks); return render(); }
+  if (e.target.closest("[data-manual]")) return;
+  const row = e.target.closest("tr.row");
+  if (row){ const id = row.dataset.id; open.has(id)?open.delete(id):open.add(id); render(); }
+});
+document.addEventListener("change", e=>{
+  if (e.target.matches("[data-manual]")){
+    const v = parseFloat(e.target.value); if (!isNaN(v)) manual[e.target.dataset.manual] = Math.round(v*10000); else delete manual[e.target.dataset.manual];
+    store.set("manual", manual); render();
+  }
+});
+
+async function load(){
+  const bust = "?t=" + Date.now();
+  const [c, p, h] = await Promise.all([
+    fetch("recipes.json"+bust).then(r=>r.json()),
+    fetch("prices.json"+bust).then(r=>r.json()),
+    fetch("history.json"+bust).then(r=>r.json()).catch(()=>[])
+  ]);
+  cfg = c; prices = p; hist = h; render();
+}
+load().catch(e=>{ document.getElementById("age").textContent = "Couldn’t load price data"; document.getElementById("age").className="pill stale"; console.error(e); });
+setInterval(()=>load().catch(()=>{}), 5*60*1000);
+</script>
+</body>
+</html>

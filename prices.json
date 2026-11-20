@@ -1,0 +1,130 @@
+{
+ "updated": "2026-11-20T02:31:36Z",
+ "house": {
+  "id": 113,
+  "name": "Horde Auction House \u00b7 PvP",
+  "captured_at": "2026-11-20T01:51:52+00:00"
+ },
+ "items": {
+  "16204": {
+   "name": "Illusion Dust",
+   "min": 2600,
+   "avg": 3335,
+   "units": 4841
+  },
+  "16203": {
+   "name": "Greater Eternal Essence",
+   "min": 27539,
+   "avg": 28648,
+   "units": 512
+  },
+  "16202": {
+   "name": "Lesser Eternal Essence",
+   "min": 9395,
+   "avg": 9813,
+   "units": 413
+  },
+  "14344": {
+   "name": "Large Brilliant Shard",
+   "min": 32200,
+   "avg": 33686,
+   "units": 403
+  },
+  "11178": {
+   "name": "Large Radiant Shard",
+   "min": 23500,
+   "avg": 25996,
+   "units": 308
+  },
+  "11176": {
+   "name": "Dream Dust",
+   "min": 2229,
+   "avg": 2593,
+   "units": 1276
+  },
+  "11175": {
+   "name": "Greater Nether Essence",
+   "min": 10968,
+   "avg": 11551,
+   "units": 113
+  },
+  "8153": {
+   "name": "Wildvine",
+   "min": 53,
+   "avg": 71,
+   "units": 2583
+  },
+  "7078": {
+   "name": "Essence of Fire",
+   "min": 17400,
+   "avg": 20920,
+   "units": 206
+  },
+  "7082": {
+   "name": "Essence of Air",
+   "min": 41590,
+   "avg": 43332,
+   "units": 163
+  },
+  "249410": {
+   "name": "Sulfuric Acid",
+   "min": 866,
+   "avg": 967,
+   "units": 1392
+  },
+  "249430": {
+   "name": "Magenta Dye",
+   "min": 3700,
+   "avg": 4427,
+   "units": 463
+  },
+  "12811": {
+   "name": "Righteous Orb",
+   "min": 129998,
+   "avg": 181737,
+   "units": 366
+  },
+  "11754": {
+   "name": "Black Diamond",
+   "min": 15,
+   "avg": 54,
+   "units": 1675
+  },
+  "18335": {
+   "name": "Pristine Black Diamond",
+   "min": 95000,
+   "avg": 110510,
+   "units": 28
+  },
+  "11737": {
+   "name": "Libram of Voracity",
+   "min": 200094,
+   "avg": 287970,
+   "units": 19
+  },
+  "18332": {
+   "name": "Libram of Rapidity",
+   "min": 3894,
+   "avg": 82768,
+   "units": 15
+  },
+  "11563": {
+   "name": "Crystal Force",
+   "min": null,
+   "avg": null,
+   "units": 0
+  },
+  "11951": {
+   "name": "Whipper Root Tuber",
+   "min": null,
+   "avg": null,
+   "units": 0
+  },
+  "12938": {
+   "name": "Blood of Heroes",
+   "min": null,
+   "avg": null,
+   "units": 0
+  }
+ }
+}

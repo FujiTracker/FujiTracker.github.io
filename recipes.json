@@ -1,0 +1,41 @@
+{
+  "items": {
+    "16204": "Illusion Dust", "16203": "Greater Eternal Essence", "16202": "Lesser Eternal Essence",
+    "14344": "Large Brilliant Shard", "11178": "Large Radiant Shard", "11176": "Dream Dust",
+    "11175": "Greater Nether Essence", "8153": "Wildvine", "7078": "Essence of Fire",
+    "7082": "Essence of Air", "249410": "Sulfuric Acid", "249430": "Magenta Dye",
+    "12811": "Righteous Orb", "11754": "Black Diamond", "18335": "Pristine Black Diamond",
+    "11737": "Libram of Voracity", "18332": "Libram of Rapidity", "11563": "Crystal Force",
+    "11951": "Whipper Root Tuber", "12938": "Blood of Heroes"
+  },
+  "recipes": [
+    {"id":"2h","slot":"Two-hander","name":"Enchant 2H Weapon - Agility (+25)","presets":["weave","turret"],
+     "reagents":[["14344",10],["16203",6],["16204",14],["7082",4]]},
+    {"id":"mh","slot":"Melee main hand","name":"Enchant Weapon - Crusader","presets":["melee"],
+     "reagents":[["14344",4],["12811",2]]},
+    {"id":"oh","slot":"Melee off hand","name":"Enchant Weapon - Agility (+15)","presets":["melee"],
+     "reagents":[["14344",6],["16203",6],["16204",4],["7082",2]]},
+    {"id":"chest","slot":"Chest","name":"Enchant Chest - Greater Stats (+4 all)","presets":["weave","turret","melee"],
+     "reagents":[["14344",4],["16204",15],["16203",10]]},
+    {"id":"neck","slot":"Neck","name":"Enchant Necklace - Agility (+5)","presets":["weave","turret","melee"],
+     "reagents":[["11175",2],["11178",8],["11176",6],["249410",4],["249430",4]]},
+    {"id":"feet","slot":"Feet","name":"Enchant Boots - Greater Agility (+7)","presets":["weave","turret","melee"],
+     "reagents":[["16203",8]]},
+    {"id":"back","slot":"Back","name":"Enchant Cloak - Agility (+5)","presets":["weave","turret","melee"],
+     "reagents":[["16203",3],["16204",9],["7078",1]]},
+    {"id":"wrist","slot":"Wrist","name":"Enchant Bracer - Superior Agility (+9)","presets":["weave","turret","melee"],
+     "reagents":[["16204",3],["16203",3],["14344",1]]},
+    {"id":"hands_ga","slot":"Hands","name":"Enchant Gloves - Greater Agility (+10)","presets":["weave","turret"],
+     "reagents":[["16202",2],["16204",2]]},
+    {"id":"hands_mh","slot":"Hands","name":"Enchant Gloves - Minor Haste (melee)","presets":["melee"],
+     "reagents":[["11178",1],["8153",1]]},
+    {"id":"head_vor","slot":"Head","name":"Lesser Arcanum of Voracity (+8 Agility)","presets":["weave","turret"],"fee":300000,
+     "reagents":[["11737",1],["11754",1],["11563",4],["11951",4]]},
+    {"id":"legs_vor","slot":"Legs","name":"Lesser Arcanum of Voracity (+8 Agility)","presets":["weave","turret"],"fee":300000,
+     "reagents":[["11737",1],["11754",1],["11563",4],["11951",4]]},
+    {"id":"head_rap","slot":"Head","name":"Arcanum of Rapidity (+1% haste)","presets":["melee"],
+     "reagents":[["18332",1],["18335",1],["14344",2],["12938",2]]},
+    {"id":"legs_rap","slot":"Legs","name":"Arcanum of Rapidity (+1% haste)","presets":["melee"],
+     "reagents":[["18332",1],["18335",1],["14344",2],["12938",2]]}
+  ]
+}
