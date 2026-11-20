@@ -13,10 +13,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: python3 scripts/update_prices.py
+      - name: Fetch prices
+        id: fetch
+        continue-on-error: true
+        shell: bash
+        run: python3 scripts/update_prices.py 2>&1 | tee run.log
+      - name: Show error on the run page
+        if: steps.fetch.outcome == 'failure'
+        run: |
+          echo "::error title=Price fetch failed::$(head -c 1500 run.log | tr '\n' ' ')"
+          cp run.log last_failure.log
       - name: Commit changes
         run: |
           git config user.name "price-bot"
           git config user.email "price-bot@users.noreply.github.com"
           git add prices.json history.json
+          [ -f last_failure.log ] && git add last_failure.log || true
           git diff --cached --quiet || (git commit -m "Update prices" && git push)
+      - name: Fail the run if fetching failed
+        if: steps.fetch.outcome == 'failure'
+        run: exit 1
