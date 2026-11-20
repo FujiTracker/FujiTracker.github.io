@@ -1,20 +1,26 @@
 #!/usr/bin/env python3
 """Fetch auction prices for every reagent in recipes.json and append a history point."""
-import json, os, sys, time, urllib.request, datetime
+import json, os, sys, time, urllib.request, urllib.error, datetime
 
 HOUSE = int(os.environ.get("AH_HOUSE", "113"))          # Horde PvP, Americas
 BASE = os.environ.get("AH_BASE", "https://blackwater.exchange/api/site/markets/us/1/%d" % HOUSE)
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MAX_HISTORY = 1000
 
-def get(url, tries=3):
+def get(url, tries=2):
+    hdrs = {"User-Agent": "Mozilla/5.0 (compatible; enchant-tracker/1.0; +https://github.com/Seanxedge/Hunter-Enchant-Tracker)",
+            "Accept": "application/json"}
     for i in range(tries):
         try:
-            req = urllib.request.Request(url, headers={"User-Agent": "enchant-tracker/1.0 (github pages)"})
-            with urllib.request.urlopen(req, timeout=30) as r:
+            req = urllib.request.Request(url, headers=hdrs)
+            with urllib.request.urlopen(req, timeout=15) as r:
                 return json.load(r)
+        except urllib.error.HTTPError as e:
+            body = e.read()[:200].decode("utf-8", "replace")
+            print("HTTP %s from %s: %s" % (e.code, url, body), file=sys.stderr)
         except Exception as e:
-            print("retry", url, e, file=sys.stderr); time.sleep(2 * (i + 1))
+            print("ERROR %s from %s: %r" % (type(e).__name__, url, e), file=sys.stderr)
+        time.sleep(2)
     return None
 
 def load(name, default):
@@ -35,7 +41,8 @@ for iid, name in cfg["items"].items():
                   "min": round(h["minimum_ask_copper"]) if h["minimum_ask_copper"] is not None else None,
                   "avg": round(h["average_ask_copper"]) if h["average_ask_copper"] is not None else None,
                   "units": h["units"]}
-if not house_meta: sys.exit("no data fetched; leaving files untouched")
+if not house_meta:
+    sys.exit("FAILED: no price data could be fetched from %s (see errors above); files left untouched" % BASE)
 
 now = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 out = {"updated": now, "house": house_meta, "items": items}
