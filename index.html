@@ -41,14 +41,14 @@
 <body>
 <main>
   <h1>Hunter Enchant Cost Tracker</h1>
-  <div class="sub">Reagent cost per slot for the Forever Hunter pre-raid BiS enchants · prices from <a href="https://blackwater.exchange/m/us/1/113" target="_blank" rel="noopener">Blackwater Exchange</a> (<span id="house">Horde PvP, Americas</span>)</div>
+  <div class="sub">Reagent cost per slot for the Forever Hunter pre-raid BiS enchants · prices from Blizzard’s auction data (<span id="house">Horde PvP, Americas</span>); reagent links go to <a href="https://blackwater.exchange/m/us/1/113" target="_blank" rel="noopener">Blackwater Exchange</a></div>
 
   <div class="bar">
     <div class="seg" id="preset" title="Which enchants count toward the total">
       <button data-v="weave" class="on">Weave / Turret</button><button data-v="melee">Melee</button>
     </div>
     <div class="seg" id="basis" title="Which auction price to use">
-      <button data-v="avg" class="on">Average ask</button><button data-v="min">Lowest ask</button>
+      <button data-v="avg" class="on">Market price</button><button data-v="min">Lowest ask</button>
     </div>
     <span id="age" class="pill">loading…</span>
   </div>
@@ -60,7 +60,7 @@
   </table>
 
   <div class="note">
-    Click a row to see its reagents (each links to its auction page). Tick or untick “In total” to build your own set.
+    Market price is the average of the cheapest ~15% of listed units, so one-off cheap or pricey listings don’t skew it. Click a row to see its reagents (each links to its auction page). Tick or untick “In total” to build your own set.
     Items with no auction listings (Crystal Force, Whipper Root Tuber, Blood of Heroes) are flagged and left out of the cost unless you enter a price for them in the row.
     Formula/recipe costs aren’t included. The SAF-T Ultra Precision Scope (Engineering) isn’t listed on the auction house, so it isn’t tracked.
     Prices refresh from the auction scan about every 30 minutes; this page re-checks every 5 minutes.

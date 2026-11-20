@@ -17,6 +17,9 @@ jobs:
         id: fetch
         continue-on-error: true
         shell: bash
+        env:
+          BNET_CLIENT_ID: ${{ secrets.BNET_CLIENT_ID }}
+          BNET_CLIENT_SECRET: ${{ secrets.BNET_CLIENT_SECRET }}
         run: python3 scripts/update_prices.py 2>&1 | tee run.log
       - name: Show error on the run page
         if: steps.fetch.outcome == 'failure'
