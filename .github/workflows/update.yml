@@ -31,6 +31,7 @@ jobs:
           git config user.name "price-bot"
           git config user.email "price-bot@users.noreply.github.com"
           git add prices.json history.json
+          [ "${{ steps.fetch.outcome }}" = "success" ] && git rm -q --ignore-unmatch last_failure.log || true
           [ -f last_failure.log ] && git add last_failure.log || true
           git diff --cached --quiet || (git commit -m "Update prices" && git push)
       - name: Fail the run if fetching failed

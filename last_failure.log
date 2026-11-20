@@ -1,2 +1,0 @@
-HTTP 401 from https://oauth.battle.net/token: {"error":"unauthorized","error_description":"Bad credentials"}
-FAILED: could not get a Battle.net access token (check the client id/secret)
