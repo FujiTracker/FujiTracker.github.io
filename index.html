@@ -10,12 +10,17 @@
   body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
   main{max-width:980px;margin:0 auto;padding:20px 14px 60px}
   h1{font-size:22px;margin:0 0 4px;color:var(--acc)}
-  .sub{color:var(--mut);font-size:13px;margin-bottom:16px}
-  .bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:14px 0}
+  .sub{color:var(--mut);font-size:13px;margin-bottom:14px}
+  .tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:14px}
+  .tabs a{padding:8px 14px;color:var(--mut);border-bottom:2px solid transparent;margin-bottom:-1px;text-decoration:none}
+  .tabs a:hover{color:var(--fg)} .tabs a.on{color:var(--acc);border-bottom-color:var(--acc);font-weight:600}
+  .bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:12px 0}
   .seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
   .seg button{background:var(--card);color:var(--fg);border:0;padding:7px 13px;cursor:pointer;font:inherit}
   .seg button+button{border-left:1px solid var(--line)}
   .seg button.on{background:var(--acc);color:#14161a;font-weight:600}
+  .btn{background:var(--card);color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:7px 13px;cursor:pointer;font:inherit}
+  .btn:hover{border-color:var(--acc)}
   .pill{font-size:12px;padding:3px 9px;border-radius:99px;border:1px solid var(--line);color:var(--mut)}
   .pill.stale{color:var(--bad);border-color:var(--bad)} .pill.fresh{color:var(--good);border-color:var(--good)}
   table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden}
@@ -33,58 +38,87 @@
   svg.spark{width:90px;height:24px;vertical-align:middle}
   .sub-t{width:100%;border-collapse:collapse;background:none;border:0}
   .sub-t td,.sub-t th{border:0;padding:3px 8px;background:none}
-  input[type=number]{width:90px;background:#101216;color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:3px 6px}
-  .note{margin-top:18px;color:var(--mut);font-size:12.5px}
-  @media(max-width:640px){.hide-m{display:none}th,td{padding:8px 6px}}
+  input[type=number]{width:80px;background:#101216;color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:3px 6px}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 14px}
+  .chip{font-size:12px;padding:3px 9px;border-radius:99px;background:#252932;color:var(--fg)}
+  tr.done td{opacity:.4;text-decoration:line-through}
+  [hidden]{display:none!important}
+  @media(max-width:640px){.hide-m{display:none}th,td{padding:8px 6px}input[type=number]{width:60px}}
 </style>
 </head>
 <body>
 <main>
   <h1>Hunter Enchant Cost Tracker</h1>
-  <div class="sub">Reagent cost per slot for the Forever Hunter pre-raid BiS enchants · prices from Blizzard’s auction data (<span id="house">Horde PvP, Americas</span>); reagent links go to <a href="https://blackwater.exchange/m/us/1/113" target="_blank" rel="noopener">Blackwater Exchange</a></div>
+  <div class="sub">Reagent cost per slot for the Forever Hunter pre-raid BiS enchants (<span id="house">Horde PvP, Americas</span>)</div>
+
+  <nav class="tabs">
+    <a href="#tracker" id="tab-tracker" class="on">Tracker</a>
+    <a href="#shopping" id="tab-shop">Shopping list</a>
+    <a href="guide.html">Hunter guide</a>
+  </nav>
 
   <div class="bar">
-    <div class="seg" id="preset" title="Which enchants count toward the total">
-      <button data-v="weave" class="on">Weave / Turret</button><button data-v="melee">Melee</button>
-    </div>
-    <div class="seg" id="basis" title="Which auction price to use">
+    <div class="seg" id="basis" title="Market price = average of the cheapest ~15% of listed units. Lowest ask = the single cheapest listing.">
       <button data-v="avg" class="on">Market price</button><button data-v="min">Lowest ask</button>
     </div>
     <span id="age" class="pill">loading…</span>
   </div>
 
-  <table>
-    <thead><tr><th>Slot</th><th>Enchant</th><th class="num">Cost</th><th class="num hide-m">Trend</th><th class="num">In total</th></tr></thead>
-    <tbody id="rows"></tbody>
-    <tfoot><tr><td colspan="2">Total for selected set</td><td class="num" id="total"></td><td class="hide-m"></td><td></td></tr></tfoot>
-  </table>
+  <!-- TRACKER -->
+  <section id="view-tracker">
+    <div class="bar" style="margin-top:0">
+      <div class="seg" id="preset" title="Which enchants count toward the total">
+        <button data-v="weave" class="on">Weave / Turret</button><button data-v="melee">Melee</button>
+      </div>
+      <span class="small">Click a row for its reagents. Tick “In total” to build your own set.</span>
+    </div>
+    <table>
+      <thead><tr><th>Slot</th><th>Enchant</th><th class="num">Cost</th><th class="num hide-m">Trend</th><th class="num">In total</th></tr></thead>
+      <tbody id="rows"></tbody>
+      <tfoot><tr><td colspan="2">Total for selected set</td><td class="num" id="total"></td><td class="hide-m"></td><td></td></tr></tfoot>
+    </table>
+  </section>
 
-  <div class="note">
-    Market price is the average of the cheapest ~15% of listed units, so one-off cheap or pricey listings don’t skew it. Click a row to see its reagents (each links to its auction page). Tick or untick “In total” to build your own set.
-    Items with no auction listings (Crystal Force, Whipper Root Tuber, Blood of Heroes) are flagged and left out of the cost unless you enter a price for them in the row.
-    Formula/recipe costs aren’t included. The SAF-T Ultra Precision Scope (Engineering) isn’t listed on the auction house, so it isn’t tracked.
-    Prices refresh from the auction scan about every 30 minutes; this page re-checks every 5 minutes.
-    Reagent counts from <a href="https://rankedboost.com/world-of-warcraft/forever/enchants/bracer/" target="_blank" rel="noopener">RankedBoost</a>;
-    enchant picks from the <a href="https://toxickevinferm.github.io/hunter-guide/prebis-new/" target="_blank" rel="noopener">Forever Hunter guide</a>.
-  </div>
+  <!-- SHOPPING LIST -->
+  <section id="view-shop" hidden>
+    <div class="bar" style="margin-top:0">
+      <div class="seg" id="scope" title="Which enchants to shop for">
+        <button data-v="selected" class="on">Selected on Tracker</button><button data-v="all">Every enchant</button>
+      </div>
+      <button class="btn" id="copy">Copy list</button>
+      <button class="btn" id="clearHave">Clear “have”</button>
+    </div>
+    <div class="small">Shopping for:</div>
+    <div class="chips" id="chips"></div>
+    <table>
+      <thead><tr><th>Item</th><th class="num">Need</th><th class="num">Have</th><th class="num">To buy</th><th class="num hide-m">Each</th><th class="num">Cost</th></tr></thead>
+      <tbody id="shop"></tbody>
+      <tfoot><tr><td colspan="5">Total to buy</td><td class="num" id="shopTotal"></td></tr></tfoot>
+    </table>
+    <div class="small" style="margin-top:8px">To change the selection, tick or untick enchants on the <a href="#tracker">Tracker</a> tab. Enter what you already own in “Have”.</div>
+  </section>
 </main>
 
 <script>
 const AH = "https://blackwater.exchange/m/us/1/113/item/";
-let cfg, prices, hist = [], preset = "weave", basis = "avg", open = new Set();
+let cfg, prices, hist = [], preset = "weave", basis = "avg", scope = "selected", open = new Set();
 const store = {
   get(k, d){ try{ const v = localStorage.getItem(k); return v==null?d:JSON.parse(v) }catch(e){ return d } },
   set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)) }catch(e){} }
 };
-let manual = store.get("manual", {});        // itemId -> copper, for unlisted items
-let picks  = store.get("picks", {});         // recipeId -> bool (overrides preset)
+let manual = store.get("manual", {});   // itemId -> copper, for items with no listings
+let picks  = store.get("picks", {});    // recipeId -> bool (overrides preset)
+let have   = store.get("have", {});     // itemId -> qty already owned
 
+const $ = id => document.getElementById(id);
 const fmt = c => {
   if (c == null) return "–";
   c = Math.round(c); const g = Math.floor(c/10000), s = Math.floor(c%10000/100), k = c%100;
   return (g?`<span class="g">${g.toLocaleString()}g</span> `:"") + `<span class="s">${s}s</span>` + (g?"":` <span class="c">${k}c</span>`);
 };
+const fmtText = c => { c = Math.round(c); const g = Math.floor(c/10000), s = Math.floor(c%10000/100); return (g?g.toLocaleString()+"g ":"") + s + "s"; };
 const ago = iso => { const m = Math.round((Date.now()-new Date(iso))/60000); return m<1?"just now":m<60?m+" min ago":Math.round(m/60)+" h ago"; };
+const view = () => location.hash === "#shopping" ? "shop" : "tracker";
 
 function unit(iid){
   const p = prices.items[iid]; const v = p && p[basis];
@@ -97,7 +131,7 @@ function cost(r){
   for (const [iid,q] of r.reagents){ const u = unit(iid); if (u.v==null) missing.push(iid); else t += u.v*q; }
   return {t, missing};
 }
-const included = r => r.id in picks ? picks[r.id] : r.presets.includes(preset === "weave" ? "weave" : "melee");
+const included = r => r.id in picks ? picks[r.id] : r.presets.includes(preset);
 
 function spark(id){
   const pts = hist.map(h=>h.cost[id]).filter(v=>v!=null).slice(-120);
@@ -108,7 +142,7 @@ function spark(id){
   return `<svg class="spark" viewBox="0 0 90 24"><polyline fill="none" stroke="${up?'#e0605e':'#5cc98a'}" stroke-width="1.6" points="${d}"/></svg>`;
 }
 
-function render(){
+function renderTracker(){
   const list = cfg.recipes.map(r=>({r, ...cost(r)})).sort((a,b)=>b.t-a.t);
   let total = 0, anyMissing = false, html = "";
   for (const {r,t,missing} of list){
@@ -124,7 +158,7 @@ function render(){
         const u = unit(iid), p = prices.items[iid];
         const each = u.src==="none"
           ? `<span class="warn">no listings</span> <input type="number" min="0" step="1" placeholder="gold" data-manual="${iid}">`
-          : fmt(u.v) + (u.src==="manual"?` <span class="small">(yours)</span>`:"") ;
+          : fmt(u.v) + (u.src==="manual"?` <span class="small">(yours)</span>`:"");
         html += `<tr><td><a href="${AH+iid}" target="_blank" rel="noopener">${cfg.items[iid]}</a> <span class="small">${p?p.units.toLocaleString()+" listed":""}</span></td>
           <td class="num">${q}</td><td class="num">${each}</td><td class="num">${u.v==null?"–":fmt(u.v*q)}</td></tr>`;
       }
@@ -132,23 +166,82 @@ function render(){
       html += `</table></td></tr>`;
     }
   }
-  document.getElementById("rows").innerHTML = html;
-  document.getElementById("total").innerHTML = fmt(total) + (anyMissing?' <span class="warn">⚠</span>':"");
-  const el = document.getElementById("age"), mins = (Date.now()-new Date(prices.house.captured_at))/60000;
+  $("rows").innerHTML = html;
+  $("total").innerHTML = fmt(total) + (anyMissing?' <span class="warn">⚠</span>':"");
+}
+
+// Build the shopping list: aggregate reagents across the chosen recipes.
+function shopData(){
+  const rs = cfg.recipes.filter(r => scope === "all" ? true : included(r));
+  const need = {}; let fees = 0;
+  for (const r of rs){ fees += r.fee || 0; for (const [iid,q] of r.reagents) need[iid] = (need[iid]||0) + q; }
+  const lines = Object.keys(need).map(iid=>{
+    const n = need[iid], h = Math.min(Number(have[iid])||0, n), buy = n - h, u = unit(iid);
+    return {iid, name: cfg.items[iid], n, h: Number(have[iid])||0, buy, u, cost: u.v==null ? null : u.v*buy};
+  }).sort((a,b)=> (b.cost||0)-(a.cost||0) || a.name.localeCompare(b.name));
+  const total = lines.reduce((s,l)=>s+(l.cost||0),0) + fees;
+  return {rs, lines, fees, total, unpriced: lines.filter(l=>l.u.v==null && l.buy>0)};
+}
+
+function renderShop(){
+  const d = shopData();
+  $("chips").innerHTML = d.rs.length ? d.rs.map(r=>`<span class="chip">${r.slot}: ${r.name.replace(/^Enchant (Weapon|2H Weapon|Chest|Necklace|Boots|Cloak|Bracer|Gloves) - /,"").replace(/ \(.*\)$/,"")}</span>`).join("") : '<span class="small">Nothing selected. Pick enchants on the Tracker tab.</span>';
+  let html = "";
+  for (const l of d.lines){
+    const each = l.u.src==="none"
+      ? `<span class="warn">no listings</span> <input type="number" min="0" step="1" placeholder="gold" data-manual="${l.iid}">`
+      : fmt(l.u.v) + (l.u.src==="manual"?` <span class="small">(yours)</span>`:"");
+    html += `<tr class="${l.buy===0?'done':''}"><td><a href="${AH+l.iid}" target="_blank" rel="noopener">${l.name}</a></td>
+      <td class="num">${l.n}</td>
+      <td class="num"><input type="number" min="0" step="1" value="${l.h||""}" placeholder="0" data-have="${l.iid}"></td>
+      <td class="num"><b>${l.buy}</b></td><td class="num hide-m">${each}</td><td class="num">${l.cost==null?"–":fmt(l.cost)}</td></tr>`;
+  }
+  if (d.fees) html += `<tr><td>Quest fees (NPC)</td><td class="num">–</td><td></td><td class="num">–</td><td class="num hide-m"></td><td class="num">${fmt(d.fees)}</td></tr>`;
+  if (!d.lines.length) html = `<tr><td colspan="6" class="small">Nothing to buy.</td></tr>`;
+  $("shop").innerHTML = html;
+  $("shopTotal").innerHTML = fmt(d.total) + (d.unpriced.length?` <span class="warn">⚠ ${d.unpriced.length} unpriced</span>`:"");
+}
+
+function copyText(){
+  const d = shopData();
+  const lines = d.lines.filter(l=>l.buy>0).map(l=>`${l.buy}x ${l.name}` + (l.cost!=null?` (${fmtText(l.cost)})`:" (no price)"));
+  if (d.fees) lines.push(`Quest fees: ${fmtText(d.fees)}`);
+  lines.push(`Total: ${fmtText(d.total)}`);
+  return lines.join("\n");
+}
+
+function render(){
+  const v = view();
+  $("view-tracker").hidden = v !== "tracker"; $("view-shop").hidden = v !== "shop";
+  $("tab-tracker").classList.toggle("on", v==="tracker"); $("tab-shop").classList.toggle("on", v==="shop");
+  if (!cfg) return;
+  if (v === "tracker") renderTracker(); else renderShop();
+  const el = $("age"), mins = (Date.now()-new Date(prices.house.captured_at))/60000;
   el.textContent = "Auction scan " + ago(prices.house.captured_at);
   el.className = "pill " + (mins > 120 ? "stale" : "fresh");
-  document.getElementById("house").textContent = prices.house.name.replace(" Auction House","");
+  $("house").textContent = prices.house.name.replace(" Auction House","");
 }
 
 document.addEventListener("click", e=>{
   const seg = e.target.closest(".seg button");
   if (seg){
     const grp = seg.parentElement.id; seg.parentElement.querySelectorAll("button").forEach(b=>b.classList.toggle("on", b===seg));
-    if (grp==="preset"){ preset = seg.dataset.v; picks = {}; store.set("picks", picks); } else basis = seg.dataset.v;
+    if (grp==="preset"){ preset = seg.dataset.v; picks = {}; store.set("picks", picks); }
+    else if (grp==="scope") scope = seg.dataset.v;
+    else basis = seg.dataset.v;
     return render();
   }
+  if (e.target.id === "copy"){
+    const t = copyText(), b = e.target;
+    (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).catch(()=>{
+      const ta = document.createElement("textarea"); ta.value = t; document.body.appendChild(ta); ta.select();
+      try{ document.execCommand("copy") }catch(_){} ta.remove();
+    }).finally(()=>{ b.textContent = "Copied ✓"; setTimeout(()=>b.textContent="Copy list", 1500); });
+    return;
+  }
+  if (e.target.id === "clearHave"){ have = {}; store.set("have", have); return render(); }
   if (e.target.matches("[data-pick]")){ picks[e.target.dataset.pick] = e.target.checked; store.set("picks", picks); return render(); }
-  if (e.target.closest("[data-manual]")) return;
+  if (e.target.closest("[data-manual],[data-have]")) return;
   const row = e.target.closest("tr.row");
   if (row){ const id = row.dataset.id; open.has(id)?open.delete(id):open.add(id); render(); }
 });
@@ -157,7 +250,12 @@ document.addEventListener("change", e=>{
     const v = parseFloat(e.target.value); if (!isNaN(v)) manual[e.target.dataset.manual] = Math.round(v*10000); else delete manual[e.target.dataset.manual];
     store.set("manual", manual); render();
   }
+  if (e.target.matches("[data-have]")){
+    const v = parseInt(e.target.value, 10); if (v > 0) have[e.target.dataset.have] = v; else delete have[e.target.dataset.have];
+    store.set("have", have); render();
+  }
 });
+window.addEventListener("hashchange", render);
 
 async function load(){
   const bust = "?t=" + Date.now();
@@ -166,9 +264,12 @@ async function load(){
     fetch("prices.json"+bust).then(r=>r.json()),
     fetch("history.json"+bust).then(r=>r.json()).catch(()=>[])
   ]);
-  cfg = c; prices = p; hist = h; render();
+  cfg = c; prices = p; hist = h;
+  // don't rebuild the page while someone is typing in a box
+  if (!(document.activeElement && document.activeElement.tagName === "INPUT" && document.activeElement.type === "number")) render();
 }
-load().catch(e=>{ document.getElementById("age").textContent = "Couldn’t load price data"; document.getElementById("age").className="pill stale"; console.error(e); });
+render();
+load().catch(e=>{ $("age").textContent = "Couldn’t load price data"; $("age").className="pill stale"; console.error(e); });
 setInterval(()=>load().catch(()=>{}), 5*60*1000);
 </script>
 </body>
