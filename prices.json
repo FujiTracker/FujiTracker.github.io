@@ -1,113 +1,113 @@
 {
- "updated": "2026-11-27T21:42:40Z",
+ "updated": "2026-11-28T03:36:36Z",
  "house": {
   "id": 113,
   "name": "Horde Auction House \u00b7 PvP",
-  "captured_at": "2026-11-27T21:26:24Z",
+  "captured_at": "2026-11-28T03:26:47Z",
   "source": "Blizzard Game Data API"
  },
  "items": {
   "16204": {
    "name": "Illusion Dust",
-   "min": 1900,
-   "avg": 1934,
-   "units": 5249
+   "min": 1620,
+   "avg": 1822,
+   "units": 2928
   },
   "16203": {
    "name": "Greater Eternal Essence",
-   "min": 33899,
-   "avg": 33974,
-   "units": 423
+   "min": 37500,
+   "avg": 37517,
+   "units": 204
   },
   "16202": {
    "name": "Lesser Eternal Essence",
-   "min": 11746,
-   "avg": 11746,
-   "units": 1010
+   "min": 11499,
+   "avg": 11499,
+   "units": 587
   },
   "14344": {
    "name": "Large Brilliant Shard",
-   "min": 34200,
-   "avg": 34245,
-   "units": 667
+   "min": 33455,
+   "avg": 33547,
+   "units": 754
   },
   "11178": {
    "name": "Large Radiant Shard",
-   "min": 22255,
-   "avg": 22255,
-   "units": 352
+   "min": 21749,
+   "avg": 21869,
+   "units": 695
   },
   "11176": {
    "name": "Dream Dust",
-   "min": 1815,
-   "avg": 1815,
-   "units": 756
+   "min": 1949,
+   "avg": 1949,
+   "units": 2680
   },
   "11175": {
    "name": "Greater Nether Essence",
-   "min": 13600,
-   "avg": 13686,
-   "units": 336
+   "min": 13581,
+   "avg": 13586,
+   "units": 591
   },
   "8153": {
    "name": "Wildvine",
-   "min": 46,
-   "avg": 57,
-   "units": 10610
+   "min": 82,
+   "avg": 86,
+   "units": 10871
   },
   "7078": {
    "name": "Essence of Fire",
-   "min": 17150,
-   "avg": 17176,
-   "units": 260
+   "min": 15000,
+   "avg": 15085,
+   "units": 391
   },
   "7082": {
    "name": "Essence of Air",
-   "min": 21999,
-   "avg": 22185,
-   "units": 313
+   "min": 20000,
+   "avg": 21191,
+   "units": 319
   },
   "249410": {
    "name": "Sulfuric Acid",
-   "min": 1144,
-   "avg": 1144,
-   "units": 934
+   "min": 1103,
+   "avg": 1114,
+   "units": 569
   },
   "249430": {
    "name": "Magenta Dye",
-   "min": 2700,
-   "avg": 2718,
-   "units": 874
+   "min": 2549,
+   "avg": 2584,
+   "units": 1276
   },
   "12811": {
    "name": "Righteous Orb",
-   "min": 94049,
-   "avg": 95738,
-   "units": 181
+   "min": 82000,
+   "avg": 84249,
+   "units": 190
   },
   "11754": {
    "name": "Black Diamond",
-   "min": 35,
-   "avg": 38,
-   "units": 2251
+   "min": 5,
+   "avg": 7,
+   "units": 2740
   },
   "18335": {
    "name": "Pristine Black Diamond",
-   "min": 299998,
-   "avg": 299998,
-   "units": 27
+   "min": 89000,
+   "avg": 92394,
+   "units": 237
   },
   "11737": {
    "name": "Libram of Voracity",
-   "min": 240000,
-   "avg": 240000,
-   "units": 12
+   "min": 349999,
+   "avg": 362024,
+   "units": 51
   },
   "18332": {
    "name": "Libram of Rapidity",
-   "min": 34196,
-   "avg": 34330,
-   "units": 118
+   "min": 13097,
+   "avg": 13173,
+   "units": 157
   },
   "11563": {
    "name": "Crystal Force",
